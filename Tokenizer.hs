@@ -16,7 +16,7 @@ makeRegexTokenizer regex =
 maximalTokenizerConbinator :: (String -> (Maybe Token, String)) -> (Maybe Token, String) -> (Maybe Token, String)
 maximalTokenizerConbinator tokenizer (Nothing, input) = tokenizer input
 maximalTokenizerConbinator tokenizer (Just (Tk regex value), rest) =
-    if result /= Nothing && length rest < length newRest
+    if result /= Nothing && length rest > length newRest
     then (result, newRest)
     else (Just (Tk regex value), rest)
     where
@@ -27,28 +27,27 @@ maximalTokenizerConbinator tokenizer (Just (Tk regex value), rest) =
 makeMaximalTokenizer :: String -> (Maybe Token, String) -> (Maybe Token, String)
 makeMaximalTokenizer regex = maximalTokenizerConbinator (makeRegexTokenizer regex)
 
+--inlineComment = mkRegex "//[^\n]*\n"
+--blockComment = mkRegexWithOpts "/\\*([^\\*]*\\*)([^/][^\\*]*\\*+)*/" False True
+--space = mkRegexWithOpts "[ \t\n\r\f\v]+" False True
 
-inlineComment = mkRegex "//.*\n"
-blockComment = mkRegexWithOpts "/\\*([^\\*]*\\*)([^/][^\\*]*\\*+)*/" False True
-space = mkRegexWithOpts "[ \t\n\r\f\v]+" False True
+anyCharTokenizer = makeMaximalTokenizer "."
+inlineCommentTokenizer = makeMaximalTokenizer "//[^\n]*\n"
+blockCommentTokenizer = makeMaximalTokenizer "/\\*([^\\*]*\\*)([^/][^\\*]*\\*+)*/"
 
-filterComments :: String -> [String]
-filterComments [] = []
-filterComments program =
-    case (matchInline, matchBlock) of
-        (Nothing, Nothing)  -> []
-        (_, Nothing)        -> preInline:(filterComments afterInline)
-        (Nothing, _)        -> preBlock:(filterComments afterBlock)
-        _                   -> case compare (length preInline) (length preBlock) of
-                                LT -> preInline:(filterComments afterInline)
-                                GT -> preBlock:(filterComments afterBlock)
-                                EQ -> [program]
+exhaustiveTokenizer :: ((Maybe Token, String) -> (Maybe Token, String)) -> String -> [Token]
+exhaustiveTokenizer tokenizer input =
+    if length input == 0
+    then []
+    else token:(exhaustiveTokenizer tokenizer remainingText)
     where
-        matchInline = matchRegexAll inlineComment program
-        Just (preInline, _, afterInline, _) = matchInline
-        matchBlock = matchRegexAll blockComment program
-        Just (preBlock, _, afterBlock, _) = matchBlock
+        (Just token, remainingText) = tokenizer (Nothing, input)
 
+commentFilter :: String -> String
+commentFilter input = map (\(Tk _ (c:_)) -> c) validTokens
+    where
+        allTokens = (exhaustiveTokenizer (anyCharTokenizer . inlineCommentTokenizer . blockCommentTokenizer) input)
+        validTokens = (filter (\(Tk tag value) -> length value == 1) allTokens)
 
-test = "//lolwtf\n            /* sdfe lol \n \r * skdfje wtf */"
+test = "//lolwtf\n    i want to say        /* sdfe lol \n \r * skdfje wtf */ something"
 
