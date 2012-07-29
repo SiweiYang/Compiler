@@ -40,4 +40,88 @@ inlineCommentTokenizer = makeRegexTokenizer "inline-comment" "//[^\n]*\n"
 -}
 blockCommentTokenizer = makeRegexTokenizer "block-comment" "/\\*([^\\*]*\\*)([^/][^\\*]*\\*+)*/"
 
+keywordTokenizerList =
+  [
+    (makeRegexTokenizer "boolean"       "boolean"),
+    (makeRegexTokenizer "byte"          "byte"),
+    (makeRegexTokenizer "double"        "double"),
+    (makeRegexTokenizer "float"         "float"),
+    (makeRegexTokenizer "int"           "int"),
+    (makeRegexTokenizer "long"          "long"),
+    (makeRegexTokenizer "short"         "short"),
+
+    (makeRegexTokenizer "abstract"      "abstract"),
+    (makeRegexTokenizer "extends"       "extends"),
+    (makeRegexTokenizer "implements"    "implements"),
+    (makeRegexTokenizer "final"         "final"),
+    (makeRegexTokenizer "static"        "static"),
+    (makeRegexTokenizer "void"          "void"),
+    (makeRegexTokenizer "class"         "class"),
+    (makeRegexTokenizer "interface"     "interface"),
+    (makeRegexTokenizer "const"         "const"),
+    (makeRegexTokenizer "synchronized"  "synchronized"),
+
+    (makeRegexTokenizer "new"           "new"),
+    (makeRegexTokenizer "this"          "this"),
+    (makeRegexTokenizer "super"         "super"),
+
+    (makeRegexTokenizer "private"       "private"),
+    (makeRegexTokenizer "protected"     "protected"),
+    (makeRegexTokenizer "public"        "public"),
+
+    (makeRegexTokenizer "switch"        "switch"),
+    (makeRegexTokenizer "case"          "case"),
+    (makeRegexTokenizer "default"       "default"),
+
+    (makeRegexTokenizer "while"         "while"),
+    (makeRegexTokenizer "for"           "for"),
+    (makeRegexTokenizer "goto"          "goto"),
+    (makeRegexTokenizer "return"        "return"),
+    (makeRegexTokenizer "continue"      "continue"),
+    (makeRegexTokenizer "do"            "do"),
+    (makeRegexTokenizer "else"          "else"),
+    (makeRegexTokenizer "if"            "if"),
+
+    (makeRegexTokenizer "throw"         "throw"),
+    (makeRegexTokenizer "throws"        "throws"),
+    (makeRegexTokenizer "try"           "try"),
+    (makeRegexTokenizer "catch"         "catch"),
+    (makeRegexTokenizer "finally"       "finally"),
+
+    (makeRegexTokenizer "import"       "import"),
+    (makeRegexTokenizer "instanceof"       "instanceof"),
+    (makeRegexTokenizer "package"       "package"),
+
+    (makeRegexTokenizer "volatile"      "volatile"),
+    (makeRegexTokenizer "transient"       "transient"),
+    (makeRegexTokenizer "strictfp"       "strictfp"),
+  ]
 keywordTokenizer = makeRegexTokenizer "keyword" "(abstract)|(assert)|(boolean)|(break)|(byte)|(case)|(catch)|(char)|(class)|(const)|(continue)|(default)|(do)|(double)|(else)|(enum)|(extends)|(final)|(finally)|(float)|(for)|(goto)|(if)|(implements)|(import)|(instanceof)|(int)|(interface)|(long)|(native)|(new)|(package)|(private)|(protected)|(public)|(return)|(short)|(static)|(strictfp)|(super)|(switch)|(synchronized)|(this)|(throw)|(throws)|(transient)|(try)|(void)|(volatile)|(while)"
+
+symbolTokenizerList =
+  [
+    (makeRegexTokenizer "LPAREN"  "["),
+    (makeRegexTokenizer "RPAREN"  "]"),
+    (makeRegexTokenizer "LCURLY"  "{"),
+    (makeRegexTokenizer "RCURLY"  "}"),
+    (makeRegexTokenizer "ASSIGN"  "="),
+    (makeRegexTokenizer "EQUALS"  "=="),
+    (makeRegexTokenizer "LT"      "<"),
+    (makeRegexTokenizer "GT"      "["),
+    (makeRegexTokenizer "MINUS"   "-"),
+    (makeRegexTokenizer "PLUS"    "+"),
+    (makeRegexTokenizer "DIVIDE"  "+"),
+    (makeRegexTokenizer "TIMES"   "*"),
+    (makeRegexTokenizer "MOD"     "%"),
+    (makeRegexTokenizer "MINUS1"  "--"),
+    (makeRegexTokenizer "PLUS1"   "++"),
+    (makeRegexTokenizer "COLON"   ":"),
+    (makeRegexTokenizer "SCOLON"  ";"),
+    (makeRegexTokenizer "SQUOTE"  "'"),
+    (makeRegexTokenizer "DQUOTE"  "\""),
+    (makeRegexTokenizer "BAND"  "&"),
+    (makeRegexTokenizer "LAND"  "&&"),
+    (makeRegexTokenizer "BOR"  "\\|"),
+    (makeRegexTokenizer "LOR"  "\\|\\|")
+  ]
+symbolTokenizer = makeRegexTokenizer "symbol" "([)|(])|({)|(})|(=)|(==)|(<)|(>)|(-)|(--)|(+)|(++)|(:)|(;)|(\")|(')|(%)|(^)|(&)|(&&)|(*)|(/)|(\\|)|(\\|\\|)"
