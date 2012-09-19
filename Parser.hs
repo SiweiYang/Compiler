@@ -24,9 +24,13 @@ symbolTable grammar = terminalList ++ nonTerminalList
     nonTerminalList = [NonTernimal grammar (root rule) | rule <- grammar]    
     terminalList = [Terminal grammar symbolName | symbolName <- fullSymbolNameList, length [symbol | symbol <- nonTerminalList, name symbol == symbolName] == 0]
 
-productions :: SymbolTable -> Symbol -> [[Symbol]]
-productions table (Terminal _ _) = []
-productions table (NonTernimal grammar symbolName) = [[head [symbol | symbol <- table, name symbol == symbolName] | symbolName <- production rule] | rule <- grammar, root rule == symbolName]
+productions :: Symbol -> [[Symbol]]
+productions (Terminal _ _) = []
+productions (NonTernimal grammar symbolName) = [[head [symbol | symbol <- table, name symbol == symbolName] | symbolName <- production rule] | rule <- relevantRules]
+  where
+    table = symbolTable grammar
+    relevantRules = [rule | rule <- grammar, root rule == symbolName]
+    relevantSymbolNames = [[symbolName | symbolName <- production rule] | rule <- relevantRules]
 
 getNullableList :: SymbolTable -> [Symbol]
 getNullableList table = symbols
@@ -53,12 +57,13 @@ buildFirstList :: [Symbol] -> [(Symbol, [Symbol])] -> Symbol -> [(Symbol, [Symbo
 buildFirstList nullable firstList (Terminal grammar symbolName) = (symbol, [symbol]) : firstList
   where
     symbol = Terminal grammar symbolName
-buildFirstList nullable firstList (NonTernimal symbolName productionList) =
+buildFirstList nullable firstList (NonTernimal grammar symbolName) =
   if foldl (\isResolvable firstFromProduction -> if isResolvable then firstFromProduction /= Nothing else False) True firstFromProductionList
   then (symbol, mergedFirstFromProductionList):firstList
   else firstList
   where
-    symbol = NonTernimal symbolName productionList
+    symbol = NonTernimal grammar symbolName
+    productionList = productions symbol
     firstFromProductionList = map (resolveProduction nullable firstList) productionList
     mergedFirstFromProductionList = foldl (\mergedFirst (Just firstFromProduction) -> mergedFirst ++ firstFromProduction) [] firstFromProductionList
 

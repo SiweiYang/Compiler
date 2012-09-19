@@ -28,4 +28,5 @@ main = do
   file <- openFile filename ReadMode
   putStrLn filename
   lines <- readLines file
-  print [[Rule (head token) (drop 2 token) | token <- split " " line, length token > 2] | line <- lines]
+  let tokens = [split " " line | line <- lines]
+  print [Rule (head token) (drop 2 token) | token <- tokens, length token > 2]
