@@ -4,7 +4,7 @@ import System.IO(openFile, IOMode(ReadMode), Handle, hIsEOF, hGetLine, hPutStrLn
 
 import Text.Regex(mkRegex, splitRegex)
 import Parser(Rule(Rule), symbolTable, getNullableList, getFirstList)
-import Parser(Symbol(Terminal), productions, joinSymbolWithSymbols)
+import Parser(Symbol(Terminal, NonTerminal), isTerminal, productions, joinSymbolWithSymbols)
 
 type FilePath = String
 
@@ -27,7 +27,7 @@ main :: IO ()
 main = do
   filename:_ <- getArgs
   file <- openFile filename ReadMode
-  putStrLn filename
+  putStrLn ("Reading Grammar Rules from [" ++ filename ++ "]")
   lines <- readLines file
   let tokens = [split " " line | line <- lines]
   let grammar = [Rule (head token) (drop 2 token) | token <- tokens, length token > 1]
@@ -37,8 +37,16 @@ main = do
   let notNullableV1 = [symbol | (weight, symbol) <- notNullableV1Pair, weight > 0]
   let notNullableV2Pair = [(minimum (map length (joinSymbolWithSymbols symbol notNullableV1)), symbol) | symbol <- table]
   let notNullableV2 = [symbol | (weight, symbol) <- notNullableV2Pair, weight > 0]
+  
+  putStrLn "Showing a list of all Tokens:"
   print table
-  print [(symbol, productions symbol) | symbol <- table]
+  
+  putStrLn "Showing a list of Production Rules:"
+  --print [(symbol, productions symbol) | symbol <- table, (not . isTerminal) symbol]
+  print [let symbol = NonTerminal grammar symbolName in (symbol, productions symbol) | NonTerminal grammar symbolName <- table]
+  
+  
+  
   print notNullableV0
   print notNullableV1Pair
   print notNullableV1

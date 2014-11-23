@@ -23,6 +23,10 @@ name :: Symbol -> String
 name (Terminal _ symbolName) = symbolName
 name (NonTerminal _ symbolName) = symbolName
 
+isTerminal :: Symbol -> Bool
+isTerminal (Terminal _ _) = True
+isTerminal (NonTerminal _ _) = False
+
 symbolTable :: Grammar -> SymbolTable
 symbolTable grammar = terminalList ++ nonTerminalList
   where
